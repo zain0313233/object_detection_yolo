@@ -1,0 +1,30 @@
+# Virtual environment
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# YOLO model files (these are usually large)
+*.weights
+*.pt
+yolo_files/*.weights
+yolo_files/*.pt
+
+# Uploaded files/test images
+uploads/
+instance/
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
