@@ -9,11 +9,18 @@
 <body>
     <h1>Detection Results</h1>
 
-    {% if filename %}
-        <p>Uploaded Image:</p>
-        <img src="{{ image_url }}" alt="Detected Image" style="max-width: 500px;">
+    {% if original_url %}
+        <p><strong>Original Image:</strong></p>
+        <img src="{{ original_url }}" alt="Original Image" style="max-width: 500px;">
     {% else %}
-        <p>No image found.</p>
+        <p>No original image found.</p>
+    {% endif %}
+
+    {% if result_url %}
+        <p><strong>Detected Image:</strong></p>
+        <img src="{{ result_url }}" alt="Detected Image" style="max-width: 500px;">
+    {% else %}
+        <p>No detection result found.</p>
     {% endif %}
 
     <p><a href="{{ url_for('main.upload') }}">Upload Another</a></p>

@@ -7,11 +7,15 @@ __pycache__/
 *.pyc
 *.pyo
 
-# YOLO model files (these are usually large)
+# YOLO model weights (ignore just the heavy files)
 *.weights
 *.pt
 yolo_files/*.weights
 yolo_files/*.pt
+
+# Allow config and names files in yolo_files
+!yolo_files/*.cfg
+!yolo_files/*.names
 
 # Uploaded files/test images
 uploads/

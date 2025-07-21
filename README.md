@@ -38,3 +38,7 @@ This project uses **YOLOv5** (You Only Look Once) with **OpenCV** and **PyTorch*
 ```bash
 git clone https://github.com/ultralytics/yolov5.git
 cd yolov5
+## 🔧 Download Yolo files must needed for detection
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names" -OutFile "coco.names"
+Invoke-WebRequest -Uri "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights" -OutFile "yolov4.weights"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4.cfg" -OutFile "yolov4.cfg"

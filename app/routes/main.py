@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 import os
 from werkzeug.utils import secure_filename
 from app.utils.helpers import allowed_file, get_unique_filename
+from app.utils.detection import detect_objects
 
 main_bp = Blueprint('main', __name__)
 
@@ -29,32 +30,25 @@ def upload():
     if request.method == 'GET':
         return render_template('upload.html')
     
-   
     if 'file' not in request.files:
         flash('No file selected!', 'error')
         return redirect(request.url)
     
     file = request.files['file']
     
- 
     if file.filename == '':
         flash('No file selected!', 'error')
         return redirect(request.url)
     
-
     if file and allowed_file(file.filename, current_app.config['ALLOWED_EXTENSIONS']):
         try:
-           
             filename = secure_filename(file.filename)
             filename = get_unique_filename(filename, current_app.config['UPLOAD_FOLDER'])
-            
             
             filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             
             flash('File uploaded successfully!', 'success')
-            
-            
             return redirect(url_for('main.results', filename=filename))
             
         except Exception as e:
@@ -64,31 +58,34 @@ def upload():
         flash('Invalid file type! Please upload an image file.', 'error')
         return redirect(request.url)
 
-@main_bp.route('/results')
 @main_bp.route('/results/<filename>')
-def results(filename=None):
+def results(filename):
     """
-    Results display route
-    
+    Results display route with object detection
     Shows object detection results for uploaded images
     """
-    
     if not filename:
         flash('No image specified!', 'error')
         return redirect(url_for('main.upload'))
-    
     
     filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
     if not os.path.exists(filepath):
         flash('Image not found!', 'error')
         return redirect(url_for('main.upload'))
     
-    # TODO: In next phase, we'll add object detection processing here
-   
-    
-    return render_template('results.html', 
-                         filename=filename,
-                         image_url=url_for('static', filename=f'uploads/{filename}'))
+    try:
+        # Run object detection
+        result_filename = detect_objects(filepath)
+        
+        return render_template('results.html',
+                             original_filename=filename,
+                             result_filename=result_filename,
+                             original_url=url_for('static', filename=f'uploads/{filename}'),
+                             result_url=url_for('static', filename=f'uploads/{result_filename}'))
+    except Exception as e:
+        current_app.logger.error(f"Detection failed: {str(e)}")
+        flash(f'Object detection failed: {str(e)}', 'error')
+        return redirect(url_for('main.upload'))
 
 @main_bp.route('/webcam')
 def webcam():
@@ -107,7 +104,6 @@ def about():
     Information about the project and technology used
     """
     return render_template('about.html')
-
 
 @main_bp.app_errorhandler(404)
 def not_found_error(error):
